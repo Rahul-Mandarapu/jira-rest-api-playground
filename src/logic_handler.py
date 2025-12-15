@@ -1,0 +1,1 @@
+## This file handles the logic behind the interactions with Jira API.
