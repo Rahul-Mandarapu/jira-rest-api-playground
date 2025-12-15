@@ -27,3 +27,11 @@ def get_jira_issue(jira_url: str, issue_key: str, auth: tuple) -> Dict[str, Any]
     response.raise_for_status()
     
     return response.json()
+
+## ----------------------------------------------------------------
+## POST FUNCTIONS - Ticket Creation
+## ----------------------------------------------------------------
+
+## ----------------------------------------------------------------
+## PUT FUNCTIONS - Ticket Update/ Comment Addition
+## ----------------------------------------------------------------
