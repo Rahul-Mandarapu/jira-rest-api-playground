@@ -1,0 +1,8 @@
+CREATE TABLE jira_issues (
+    id INTEGER PRIMARY KEY,
+    project_key TEXT,
+    issue_type TEXT,
+    summary TEXT,
+    description TEXT,
+    processed INTEGER DEFAULT 0
+);
