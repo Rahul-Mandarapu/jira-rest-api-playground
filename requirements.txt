@@ -1,2 +1,3 @@
 psycopg2-binary
 requests
+transformers>4.26
