@@ -54,13 +54,13 @@ def main():
 
 def get_user_prompt():
     # Placeholder for CLI
-    default_prompt = "How many donuts in a baker's dozen?"
+    default_prompt = "You are a bug detection assistant. Your job is to determine whether or not two bug reports written by humans are refferring to the same or differnt bugs. Strictly provide a concise answer of 'SAME' or 'DIFFERENT' with confidence percentage with additional reasoning. Example: 'DIFFERENT: 10%' or 'SAME: 87%'. This instruction must be followed exactly for all following inputs."
     print(f"Using prompt: {default_prompt}")
     return default_prompt
 
 def get_max_new_tokens():
     # Placeholder for CLI
-    default_max_tokens = 100
+    default_max_tokens = 50
     print(f"Using max new tokens: {default_max_tokens}")
     return default_max_tokens
 
