@@ -2,9 +2,8 @@
 ## ----------------------------------------------------------------
 ## IMPORTS
 ## ----------------------------------------------------------------
-import torch 
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline 
-from transformers import BitsAndBytesConfig
+import subprocess
+from pathlib import Path
 
 ## ----------------------------------------------------------------
 ## CLASS DEFINITIONS
@@ -30,6 +29,47 @@ class BugReport:
 ## ----------------------------------------------------------------
 ## COMPARISON - FINAL Decision Logic
 ## ----------------------------------------------------------------
+
+def main():
+    # Gets the model's path for the run command
+    print("Initializing LLM model run... \n\n\n")
+    model_path = get_model_path()
+    user_prompt = get_user_prompt()
+    max_new_tokens = get_max_new_tokens()
+
+    # Constructs command line to run the LLM model
+    command = [
+        "llama-cli",
+        "-m", str(model_path),
+        "-p", f"{user_prompt}",
+        "-n", f"{max_new_tokens}"
+    ]
+
+    print(f"\n\n\n Running command: {' '.join(command)}")
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    print(result.stdout)
+
+    return
+
+def get_user_prompt():
+    # Placeholder for CLI
+    default_prompt = "How many donuts in a baker's dozen?"
+    print(f"Using prompt: {default_prompt}")
+    return default_prompt
+
+def get_max_new_tokens():
+    # Placeholder for CLI
+    default_max_tokens = 100
+    print(f"Using max new tokens: {default_max_tokens}")
+    return default_max_tokens
+
+def get_model_path():
+    path = Path(__file__).resolve().parent.parent / "models" / "phi3-mini-4k-q4_k_m.gguf"
+    print(f"Using model at: {path}")
+    return path
+
+"""
 def main():
     # Using Phi-3-mini model for bug report comparison
     model_name = "microsoft/Phi-3-mini-4k-instruct"
@@ -53,6 +93,7 @@ def main():
     # Running the model
     output_text = run_model(generation_args, model_name, prompt)
     print(output_text) 
+
 
 # ------------ Helpers ------------
 # Runs the model with input prompt and params.
@@ -80,6 +121,7 @@ def run_model(generation_args: dict[str, any], model_name: str, prompt: list[dic
     output = pipe(prompt, **generation_args)
     return output[0]['generated_text']
 
+
 # Initializes and returns LLM
 def initialize_model(model_name: str, bnb_config: BitsAndBytesConfig):
     # Set random seed for reproducibility
@@ -93,7 +135,7 @@ def initialize_model(model_name: str, bnb_config: BitsAndBytesConfig):
         trust_remote_code=True,
     )
     return model
-
+"""
 
 if __name__ == "__main__":
     main()
