@@ -4,6 +4,7 @@
 ## ----------------------------------------------------------------
 import torch 
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline 
+from transformers import BitsAndBytesConfig
 
 ## ----------------------------------------------------------------
 ## CLASS DEFINITIONS
@@ -56,8 +57,16 @@ def main():
 # ------------ Helpers ------------
 # Runs the model with input prompt and params.
 def run_model(generation_args: dict[str, any], model_name: str, prompt: list[dict[str, str]]):
-    # Initialize model and tokenizer
-    model = initialize_model(model_name)
+    # Initialize model and tokenizer with 4-bit quantization
+    
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.bfloat16
+    )
+    
+    model = initialize_model(model_name, bnb_config)
     tokenizer = AutoTokenizer.from_pretrained(model_name) 
 
     # Create text generation pipeline
@@ -72,15 +81,15 @@ def run_model(generation_args: dict[str, any], model_name: str, prompt: list[dic
     return output[0]['generated_text']
 
 # Initializes and returns LLM
-def initialize_model(model_name: str):
+def initialize_model(model_name: str, bnb_config: BitsAndBytesConfig):
     # Set random seed for reproducibility
     torch.random.manual_seed(0)
 
-    # Load the model using CPU
+    # Load the model using 4-bit quantization
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
-        device_map="cpu",
-        torch_dtype="auto",
+        device_map="auto",  # Use "auto" to allow for better device management
+        quantization_config=bnb_config,  # Pass the BitsAndBytesConfig for quantization
         trust_remote_code=True,
     )
     return model
