@@ -3,12 +3,20 @@
 ## IMPORTS
 ## ----------------------------------------------------------------
 import requests 
+import auth as au
 from typing import Dict, Any
+
+## ----------------------------------------------------------------
+## AUTHENTICATION CONSTANTS
+## ----------------------------------------------------------------
+USER_AUTH = (au.JIRA_USERNAME, au.JIRA_API_TOKEN)
+JIRA_URL = au.JIRA_URL
 
 ## ----------------------------------------------------------------
 ## GET FUNCTIONS - Ticket Retrieval
 ## ----------------------------------------------------------------
-def get_jira_issue(jira_url: str, issue_key: str, auth: tuple) -> Dict[str, Any]:
+def get_jira_issue(issue_key: str) -> Dict[str, Any]:
+
     """
     Retrieve a Jira issue by its key.
     
@@ -20,10 +28,10 @@ def get_jira_issue(jira_url: str, issue_key: str, auth: tuple) -> Dict[str, Any]
     Returns:
         Dictionary containing the issue details
     """
-    endpoint = f"{jira_url}/rest/api/3/issues/{issue_key}"
+    endpoint = f"{JIRA_URL}/rest/api/3/issues/{issue_key}"
     headers = {"Accept": "application/json"}
     
-    response = requests.get(endpoint, headers=headers, auth=auth)
+    response = requests.get(endpoint, headers=headers, auth=USER_AUTH)
     response.raise_for_status()
     
     return response.json()
