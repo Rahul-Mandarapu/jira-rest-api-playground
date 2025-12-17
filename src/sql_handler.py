@@ -2,49 +2,39 @@
 ## ----------------------------------------------------------------
 ## IMPORTS
 ## ----------------------------------------------------------------
-import sqlite3
-from typing import List, Dict, Any, Optional
-from datetime import datetime
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from typing import List, Dict, Any
 
 ## ----------------------------------------------------------------
 ## GET FUNCTIONS - Database Retrieval
 ## ----------------------------------------------------------------
-def get_issue_from_queue(issue_id: int) -> Optional[Dict[str, Any]]:
-    """Retrieve a single Jira issue from the queue by ID."""
-    conn = sqlite3.connect('issues.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    
-    cursor.execute('SELECT * FROM jira_issue_queue WHERE id = ?', (issue_id,))
-    row = cursor.fetchone()
-    conn.close()
-    
-    return dict(row) if row else None
+def get_logs_by_jira_id(conn, jira_id: str) -> List[Dict[str, Any]]:
+    """Retrieve all error logs for a specific JIRA issue."""
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(
+            "SELECT id, jira_id, error_log, created_at FROM issue_error_logs WHERE jira_id = %s ORDER BY created_at DESC",
+            (jira_id,)
+        )
+        return cur.fetchall()
 
+def get_logs_by_id(conn, log_id: int) -> Dict[str, Any]:
+    """Retrieve a specific error log by ID."""
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(
+            "SELECT id, jira_id, error_log, created_at FROM issue_error_logs WHERE id = %s",
+            (log_id,)
+        )
+        return cur.fetchone()
 
-def get_error_logs_by_issue(issue_id: int) -> List[Dict[str, Any]]:
-    """Retrieve all error logs for a specific issue."""
-    conn = sqlite3.connect('issues.db')
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    
-    cursor.execute('SELECT * FROM issue_error_logs WHERE issue_id = ? ORDER BY created_at DESC', (issue_id,))
-    rows = cursor.fetchall()
-    conn.close()
-    
-    return [dict(row) for row in rows]
-
-
-def is_database_empty() -> bool:
-    """Check if the jira_issue_queue table is empty."""
-    conn = sqlite3.connect('issues.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('SELECT COUNT(*) FROM jira_issue_queue')
-    count = cursor.fetchone()[0]
-    conn.close()
-    
-    return count == 0
+def get_all_logs(conn, limit: int = 100) -> List[Dict[str, Any]]:
+    """Retrieve all error logs with optional limit."""
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute(
+            "SELECT id, jira_id, error_log, created_at FROM issue_error_logs ORDER BY created_at DESC LIMIT %s",
+            (limit,)
+        )
+        return cur.fetchall()
 
 ## ----------------------------------------------------------------
 ## PUT FUNCTIONS - Database Update
