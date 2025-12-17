@@ -10,3 +10,13 @@ CREATE TABLE IF NOT EXISTS issue_error_logs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_issue_error_logs_jira_id ON issue_error_logs(jira_id);
+INSERT INTO issue_error_logs (jira_id, error_log) VALUES
+('TICKET-1', 'ERROR-401: Invalid credentials provided'),
+('TICKET-2', 'ERROR-403: User account locked due to failed login attempts'),
+('TICKET-3', 'ERROR-407: Multi-factor authentication failure'),
+('TICKET-4', 'ERROR-402: Insufficient payment method balance'),
+('TICKET-5', 'ERROR-422: Invalid product SKU in purchase request'),
+('TICKET-6', 'ERROR-409: Inventory conflict - product out of stock'),
+('TICKET-7', 'ERROR-500: CSS stylesheet failed to load'),
+('TICKET-8', 'ERROR-406: JavaScript rendering error on checkout page'),
+('TICKET-9', 'ERROR-503: API gateway timeout - service unreachable'),
