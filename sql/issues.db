@@ -1,49 +1,12 @@
-# SQL Schema Documentation
-
-## Overview
-This schema defines the database structure for managing Jira issue processing with error tracking and logging capabilities.
-
-## Tables
-
-### jira_issue_queue
-- **Purpose**: Main queue table for storing Jira issues pending processing
-- **Primary Key**: `id` (auto-incrementing integer)
-- **Status**: Incomplete schema - requires additional columns for full functionality
-
-### issue_error_logs
-- **Purpose**: Stores diagnostic information and error logs for failed Jira issue processing attempts
-- **Primary Key**: `id` (auto-incrementing integer)
-- **Foreign Key**: `issue_id` references `jira_issue_queue(id)` with CASCADE delete behavior
-- **Columns**:
-    - `issue_id`: Links error logs to specific queue entries
-    - `error_message`: Required text field capturing the error description
-    - `error_details`: JSON formatted details (defaults to empty object)
-    - `log_level`: Severity classification (defaults to 'ERROR')
-    - `created_at`: Automatic timestamp of when error was logged
-
-## Indexes
-- **idx_issue_error_logs_issue_id**: Indexes `issue_id` column for optimized query performance when retrieving logs for specific issues
-
-## Design Pattern
-Uses a referential integrity pattern with CASCADE delete to automatically remove error logs when their associated queue entries are deleted, maintaining database consistency.
-
-## CODE ##
--- filepath: /Users/rahulmandarapu/Documents/IdeaBytes/JiraRestApiTest/sql/schema.sql
--- TABLE: issue_error_logs
--- PURPOSE: Stores error logs and diagnostic information for failed Jira issue processing
-
-CREATE TABLE IF NOT EXISTS jira_issue_queue (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    -- Add other required columns as needed
-);
+-- filepath: /Users/rahulmandarapu/Documents/IdeaBytes/JiraRestApiTest/sql/issues.db
+-- This table stores error logs associated with JIRA issues for tracking and debugging purposes.
+-- Each error log entry is linked to a specific JIRA issue via its jira_id.
 
 CREATE TABLE IF NOT EXISTS issue_error_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    issue_id INTEGER NOT NULL REFERENCES jira_issue_queue(id) ON DELETE CASCADE,
-    error_message TEXT NOT NULL,
-    error_details TEXT DEFAULT '{}',
-    log_level TEXT DEFAULT 'ERROR',
+    jira_id VARCHAR(255) NOT NULL,
+    error_log VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_issue_error_logs_issue_id ON issue_error_logs(issue_id);
+CREATE INDEX IF NOT EXISTS idx_issue_error_logs_jira_id ON issue_error_logs(jira_id);
