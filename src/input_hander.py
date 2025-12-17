@@ -1,4 +1,5 @@
 import logic_handler as lh
+from pathlib import Path
 
 ## ----------------------------------------------------------------
 ## USER PROMPT INPUT
@@ -25,10 +26,17 @@ def get_user_prompt():
 ## ----------------------------------------------------------------
 
 def get_max_new_tokens():
-    # Placeholder for CLI
-    default_max_tokens = lh.DEFAULT_MAX_NEW_TOKENS
-    print(f"\n Using max new tokens: {default_max_tokens}")
-    return default_max_tokens
+    max_tokens = 0
+    user_input = input("Enter max new tokens: ")
+    print(f"\n User input for max new tokens: {user_input}")
+    if type(user_input) != str or int(user_input) <= 0:
+        print(f" Invalid input. Defaulting to {lh.DEFAULT_MAX_NEW_TOKENS}.")
+        max_tokens = lh.DEFAULT_MAX_NEW_TOKENS
+    else:
+        max_tokens = int(user_input)
+    
+    print(f"\n Using max new tokens: {max_tokens}")
+    return int(max_tokens)
 
 ## ----------------------------------------------------------------
 ## MODEL PATH INPUT

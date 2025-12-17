@@ -49,11 +49,13 @@ def main():
     
     # Constructs command line to run the LLM model
     command = construct_command(model_path, user_prompt, max_new_tokens)
-    print(f"\n\n\n Running command: {' '.join(command)}")
+    print(f"\n\n\n Initializing LLM: \n\n\n")
 
     # Runs the model
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=True, text=True, timeout=300)
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"Error: {result.stderr}")
 
     return
 
@@ -63,7 +65,7 @@ def construct_command(model_path, user_prompt, max_new_tokens):
         "llama-cli",
         "--model", str(model_path),
         "--prompt", user_prompt,
-        "--max-new-tokens", str(max_new_tokens)
+        "-n", str(max_new_tokens)
     ]
     return command
 
